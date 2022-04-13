@@ -23,10 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     clearClassFromAllNodes('highlight');
     if (target.tagName === 'A') {
       document.querySelector(target.hash).classList.add('highlight');
-    } else if (target.tagName === 'ARTICLE') {
-      target.classList.add('highlight');
-    } else if (target.tagName === 'H2' || target.tagName === 'P') {
-      target.parentElement.classList.add('highlight');
+    } else if (target.closest('article')) {
+      let article = target.closest('article')
+      article.classList.add('highlight');
     } else {
       document.querySelector('main').classList.add('highlight');
     }
