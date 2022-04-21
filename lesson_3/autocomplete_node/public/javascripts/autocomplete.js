@@ -23,6 +23,12 @@ const Autocomplete = {
   bindEvents: function() {
     this.input.addEventListener('input', this.valueChanged.bind(this));
     this.input.addEventListener('keydown', this.handleKeydown.bind(this));
+    this.listUI.addEventListener('mousedown', this.handleMousedown.bind(this));
+  },
+
+  handleMousedown: function(event) {
+    this.input.value = event.target.textContent;
+    this.reset();
   },
 
   handleKeydown: function(event) {
