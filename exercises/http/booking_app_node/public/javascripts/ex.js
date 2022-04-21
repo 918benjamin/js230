@@ -2,12 +2,14 @@ function retrieveSchedules() {
   let request = new XMLHttpRequest();
 
   request.open('GET', '/api/schedules');
+  request.timeout = 5000;
   request.responseType = 'json';
 
   request.addEventListener('load', event => {
     let request = event.target;
     let data = request.response;
     let userMessage;
+
     if (data.length === 0) {
       userMessage = 'There are currently no schedules available for booking';
     } else {
@@ -25,7 +27,6 @@ function retrieveSchedules() {
     }
 
     alert(userMessage);
-    console.log(userMessage);
   });
 
   request.addEventListener('error', event => {
@@ -33,14 +34,15 @@ function retrieveSchedules() {
     alert(`Something went wrong. Response code:${request.status}`);
   });
 
-  request.send();
+  request.addEventListener('timeout', event => {
+    alert('Your request timed out. Please try again.')
+  });
 
-  setTimeout(() => {
-    if (request.readyState !== 4) {
-      request.abort();
-      alert('Your request timed out. Please try again.')
-    }
-  }, 5000)
+  request.addEventListener('loadend', event => {
+    alert(`The request has been completed. Status: ${request.status}`);
+  });
+
+  request.send();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
