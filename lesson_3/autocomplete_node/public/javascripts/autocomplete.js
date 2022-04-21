@@ -39,18 +39,6 @@ const Autocomplete = {
     }
   },
 
-  fetchMatches: function(query, callback) {
-    let request = new XMLHttpRequest();
-
-    request.addEventListener('load', () => {
-      callback(request.response);
-    });
-
-    request.open('GET', `${this.url}${encodeURIComponent(query)}`);
-    request.responseType = 'json';
-    request.send();
-  },
-
   draw: function() {
     while (this.listUI.lastChild) {
       this.listUI.removeChild(this.listUI.lastChild);
@@ -61,7 +49,7 @@ const Autocomplete = {
       return;
     }
 
-    if(this.bestMatchIndex !== null && this.matches.length !== 0) {
+    if (this.bestMatchIndex !== null && this.matches.length !== 0) {
       let selected = this.matches[this.bestMatchIndex];
       this.overlay.textContent = this.generateOverlayContent(this.input.value, selected);
     } else {
@@ -74,12 +62,24 @@ const Autocomplete = {
 
       li.textContent = match.name;
       this.listUI.appendChild(li);
-    })
+    });
   },
 
   generateOverlayContent: function(value, match) {
     let end = match.name.substr(value.length);
     return value + end;
+  },
+
+  fetchMatches: function(query, callback) {
+    let request = new XMLHttpRequest();
+
+    request.addEventListener('load', () => {
+      callback(request.response);
+    });
+
+    request.open('GET', `${this.url}${encodeURIComponent(query)}`);
+    request.responseType = 'json';
+    request.send();
   },
 
   reset: function() {
@@ -102,7 +102,7 @@ const Autocomplete = {
     this.bindEvents();
 
     this.reset();
-  },
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
