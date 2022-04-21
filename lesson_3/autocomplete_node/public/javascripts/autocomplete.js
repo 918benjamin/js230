@@ -49,6 +49,13 @@ const Autocomplete = {
         this.bestMatchIndex = null;
         this.draw();
         break;
+      case 'Tab':
+        event.preventDefault();
+        if (this.bestMatchIndex !== null && this.matches.length !== 0) {
+          this.input.value = this.matches[this.bestMatchIndex].name;
+        }
+        this.reset();
+        break;
     }
   },
 
