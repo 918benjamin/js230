@@ -56,11 +56,19 @@ const Autocomplete = {
         }
         this.reset();
         break;
+      case 'Enter':
+        this.reset();
+        break;
+      case 'Escape':
+        this.input.value = this.previousValue;
+        this.reset();
+        break;
     }
   },
 
   valueChanged: function() {
     let value = this.input.value;
+    this.previousValue = value;
 
     if (value.length > 0) {
       this.fetchMatches(value, matches => {
@@ -128,6 +136,7 @@ const Autocomplete = {
     this.matches = [];
     this.bestMatchIndex = null;
     this.selectedIndex = null;
+    this.previousValue = null;
 
     this.draw();
   },
