@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>your page title goes here</title>
+    <meta charset="utf-8" />
+    <style>
+      dl {
+          border: 3px double #ccc;
+          padding: 0.5em;
+      }
+      dt {
+          float: left;
+          clear: left;
+          width: 100px;
+          text-align: right;
+          font-weight: bold;
+          color: #f0595b;
+      }
+      dt::after {
+          content: ":";
+      }
+      dd {
+          margin: 0 0 0 110px;
+          padding: 0 0 0.5em 0;
+      }
+ 
+      input[type="submit"] {
+          color: #fff;
+          background: #f0595b;
+          border-color: #f0595b;
+          border-radius: 5px;
+          width: 100px;
+          height: 50px;
+      }
+     </style>
+  </head>
+  <body>
+    <button id="add">Add more schedules</button>
+    <form action="/api/schedules" method="post">
+      <dl>
+        <dt>
+          <label for="staff_id">Staff Name: </label>
+        </dt>
+        <dd>
+          <select name="staff_id"></select>
+        </dd>
+        <dt>
+          <label for="date">Date: </label>
+        </dt>
+        <dd>
+          <input type="text" name="date" placeholder="mm-dd-yy">
+        </dd>
+        <dt>
+          <label for="time" >Time: </label>
+        </dt>
+        <dd>
+          <input type="text" name="time" placeholder="hh:mm">
+        </dd>
+      </dl>
+
+      <input type="submit" value="Submit">
+    </form>
+
+    <script>
+      function createOption(staff) {
+        let element = document.createElement('option');
+        element.value = staff.id;
+        element.text = staff.name;
+        return element;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let staffSelect = document.querySelector('select');
+        let addButton = document.getElementById('add');
+        let form = document.querySelector('form');
+
+        let request = new XMLHttpRequest();
+        request.open('GET', '/api/staff_members');
+        request.responseType = 'json';
+
+        request.addEventListener('load', () => {
+          request.response.forEach(staff => {
+            let option = createOption(staff);
+            staffSelect.appendChild(option);
+          })
+        })
+
+        request.addEventListener('error', () => {
+          alert(`Something went wrong: ${request.status}`);
+        })
+
+        request.send();
+
+        addButton.addEventListener('click', event => {
+          event.preventDefault();
+          let dl = document.querySelector('dl');
+          let dlClone = dl.cloneNode(true);
+          // TODO clear the fields before inserting
+
+          form.insertBefore(dlClone, form.lastElementChild);
+        })
+
+        function formDataToJson(formData) {
+          const json = {schedules: []};
+          let obj = {};
+
+          for (let pair of formData.entries()) {
+            let key = pair[0];
+            let value = pair[1];
+
+            if (key === 'staff_id') {
+              value = Number.parseInt(value, 10);
+            }
+
+            obj[key] = value;
+            
+            if (key === 'time') {
+              json.schedules.push(obj);
+              obj = {};
+            }
+          }
+
+          return json;
+        }
+
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+
+          let request = new XMLHttpRequest();
+          request.open(form.method.toUpperCase(), form.action);
+          request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+          let data = formDataToJson(new FormData(form));
+
+          request.addEventListener('load', () => {
+            alert(request.response);
+            form.reset();
+          });
+
+          request.addEventListener('error', () => {
+            alert(`Something went wrong: ${request.status}`);
+          });
+          debugger;
+          request.send(JSON.stringify(data));
+        })
+      })
+    </script>
+  </body>
+</html>
