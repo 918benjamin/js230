@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>your page title goes here</title>
+    <meta charset="utf-8" />
+    <style>
+      .new_student {
+        background-color: rgba(128, 128, 128, 0.56);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Schedules</h1>
+    <form action="/api/bookings" method="post">
+      <dl>
+        <dt>
+          <label for="id">Please select one schedule </label>
+        </dt>
+        <dd>
+          <select name="id">
+            <option value="">Loading schedules...</option>
+          </select>
+        </dd>
+        <dt>
+          <label for="student_email">Email: </label>
+        </dt>
+        <dd>
+          <input type="text" name="student_email">
+        </dd>
+      </dl>
+
+      <input type="submit" value="Submit">
+    </form>
+
+    <div class="new_student" hidden>
+      <h1>Please provide new student details</h1>
+      <form action="/api/students" method="post">
+        <dl>
+          <dt>
+            <label for="email">Email: </label>
+          </dt>
+          <dd>
+            <input type="text" name="email">
+          </dd>
+          <dt>
+            <label for="name">Name: </label>
+          </dt>
+          <dd>
+            <input type="text" name="name">
+          </dd>
+          <dt>
+            <label for="booking_sequence">Booking Sequence: </label>
+          </dt>
+          <dd>
+            <input type="text" name="booking_sequence">
+          </dd>
+        </dl>
+
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+
+    <script>
+      function createOption(schedule, staff) {
+        let element = document.createElement('option');
+        element.value = schedule.id;
+        element.text = `${staff.name} | ${schedule.date} | ${schedule.time}`;
+        return element;
+      }
+
+      function getStaff(staffArray, staffId) {
+        for (let i = 0; i < staffArray.length; i += 1) {
+          if (staffArray[i].id === staffId) return staffArray[i];
+        }
+      }
+
+      function fillAndShowNewStudentForm(email, bookingSequence) {
+        let div = document.querySelector('.new_student')
+        let inputs = div.getElementsByTagName('input');
+        let emailInput = inputs[0];
+        let bookingSequenceInput = inputs[2];
+
+        emailInput.value = email;
+        bookingSequenceInput.value = bookingSequence;
+        
+        div.hidden = false;
+      }
+
+      function getBookingSequence(responseText) {
+        let responseWords = responseText.split(' ');
+        return responseWords[responseWords.length - 1];
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let scheduleSelector = document.querySelector('select');
+        let scheduleForm = document.querySelector('form');
+        let newStudenForm = document.getElementsByTagName('form')[1];
+        let div = document.querySelector('.new_student');
+
+        let staffPromise = new Promise((resolve, reject) => {
+          let request = new XMLHttpRequest();
+          request.responseType = 'json';
+          request.open('GET', '/api/staff_members');
+
+          request.addEventListener('load', () => {
+            resolve(request.response);
+          });
+
+          request.addEventListener('error', () => {
+            reject(`Error: ${request.status}`);
+          });
+
+          request.send();
+        });
+
+        staffPromise.then(staffData => {
+          let request = new XMLHttpRequest();
+          request.open('GET', '/api/schedules');
+          request.responseType = 'json';
+
+          request.addEventListener('load', () => {
+            scheduleSelector.firstElementChild.remove();
+
+            request.response.forEach(schedule => {
+              if (!schedule.student_email) {
+                let staff = getStaff(staffData, schedule.staff_id)
+                let option = createOption(schedule, staff);
+                scheduleSelector.appendChild(option);
+              }
+            })
+          })
+
+          request.addEventListener('error', () => {
+            alert(`Something went wrong: ${request.status}`);
+          })
+
+          request.send();
+        })
+        .catch(reason => {
+          alert(reason);
+        })
+
+        scheduleForm.addEventListener('submit', event => {
+          event.preventDefault();
+
+          let request = new XMLHttpRequest();
+          request.open(scheduleForm.method.toUpperCase(), scheduleForm.action);
+          let data = new FormData(scheduleForm);
+
+          request.addEventListener('load', () => {
+            if (request.status === 204) {
+              let id = data.get('id');
+              let options = scheduleForm.querySelectorAll('option')
+
+              options.forEach(option => {
+                if (option.value === id) option.remove();
+              });
+
+              alert('Booked');
+              scheduleForm.reset();
+              div.hidden = true;
+
+            } else if (request.response === 'Schedule is either booked or does not exist.') {
+              alert(request.response);
+            } else {
+              alert(request.response);
+              let email = data.get('student_email');
+              let bookingSequence = getBookingSequence(request.response);
+              fillAndShowNewStudentForm(email, bookingSequence);
+              // anything else?
+            }
+          });
+
+          request.addEventListener('error', () => {
+            alert(`Something went wrong: ${request.status}`);
+          });
+
+          request.send(data);
+        })
+
+        newStudenForm.addEventListener('submit', () => {
+          event.preventDefault();
+
+          let request = new XMLHttpRequest();
+          request.open(newStudenForm.method.toUpperCase(), newStudenForm.action);
+          let data = new FormData(newStudenForm);
+
+          request.addEventListener('load', () => {
+            alert(request.response);
+
+            if (request.status === 201) {
+              scheduleForm.requestSubmit();
+            }
+          });
+
+          request.addEventListener('error', () => {
+            alert(`Something went wrong: ${request.status}`);
+          });
+
+          request.send(data);
+        });
+      })
+    </script>
+  </body>
+</html>
