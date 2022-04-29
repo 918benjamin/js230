@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>your page title goes here</title>
+    <meta charset="utf-8" />
+    <style>
+      .new_student {
+        background-color: rgba(128, 128, 128, 0.56);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bookings</h1>
+    <ul></ul>
+
+    <script>
+      function createBookingDetail(booking) {
+        let element = document.createElement('li');
+        element.textContent = `${booking.staff.name} | ${booking.student_email} | ${booking.time}`;
+        element.hidden = true;
+        return element;
+      }
+
+      function createBookingDate(date) {
+        let element = document.createElement('li');
+        element.textContent = date;
+        return element;
+      }
+
+      function getStaff(staffArray, staffId) {
+        for (let i = 0; i < staffArray.length; i += 1) {
+          if (staffArray[i].id === staffId) return staffArray[i];
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let list = document.querySelector('ul');
+
+        let staffPromise = new Promise((resolve, reject) => {
+          let request = new XMLHttpRequest();
+          request.responseType = 'json';
+          request.open('GET', '/api/staff_members');
+
+          request.addEventListener('load', () => {
+            resolve(request.response);
+          });
+
+          request.addEventListener('error', () => {
+            reject(`Error: ${request.status}`);
+          });
+
+          request.send();
+        });
+
+        staffPromise.then(staffData => {
+          let request = new XMLHttpRequest();
+          request.open('GET', '/api/schedules');
+          request.responseType = 'json';
+
+          request.addEventListener('load', () => {
+            let bookings = {};
+
+            request.response.forEach(schedule => {
+              if (schedule.student_email) {
+                let staff = getStaff(staffData, schedule.staff_id);
+                schedule.staff = staff;
+                let bookingElement = createBookingDetail(schedule);
+
+                if (!bookings[schedule.date]) bookings[schedule.date] = [];
+
+                bookings[schedule.date].push(bookingElement);
+              };
+            });
+
+            Object.keys(bookings).forEach(date => {
+              let dateElement = createBookingDate(date);
+              dateElement.appendChild(document.createElement('ul'));
+
+              bookings[date].forEach(bookingElement => {
+                dateElement.firstElementChild.appendChild(bookingElement);
+              });
+
+              
+              list.appendChild(dateElement);
+            });
+          });
+
+          request.addEventListener('error', () => {
+            alert(`Something went wrong: ${request.status}`);
+          });
+
+          request.send();
+        })
+        .catch(reason => {
+          alert(reason);
+        });
+
+        list.addEventListener('click', event => {
+          let item = event.target;
+          if (Array.prototype.includes.call(list.children, item)) {
+            let listItems = Array.prototype.slice.call(item.firstElementChild.children);
+
+            listItems.forEach(listItem => {
+              listItem.hidden = !listItem.hidden;
+            });
+          };
+        });
+      });
+    </script>
+  </body>
+</html>
