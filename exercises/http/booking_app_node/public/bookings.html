@@ -16,30 +16,24 @@
     <script>
       function createBookingDetail(booking) {
         let element = document.createElement('li');
-        element.textContent = `${booking.staff.name} | ${booking.student_email} | ${booking.time}`;
+        element.textContent = `${booking[0]} | ${booking[1]} | ${booking[2]}`;
         element.hidden = true;
         return element;
       }
 
-      function createBookingDate(date) {
+      function createBookingDate(dateString) {
         let element = document.createElement('li');
-        element.textContent = date;
+        element.textContent = dateString;
         return element;
-      }
-
-      function getStaff(staffArray, staffId) {
-        for (let i = 0; i < staffArray.length; i += 1) {
-          if (staffArray[i].id === staffId) return staffArray[i];
-        }
       }
 
       document.addEventListener('DOMContentLoaded', () => {
         let list = document.querySelector('ul');
 
-        let staffPromise = new Promise((resolve, reject) => {
+        let datesPromise = new Promise((resolve, reject) => {
           let request = new XMLHttpRequest();
           request.responseType = 'json';
-          request.open('GET', '/api/staff_members');
+          request.open('GET', '/api/bookings');
 
           request.addEventListener('load', () => {
             resolve(request.response);
@@ -52,44 +46,30 @@
           request.send();
         });
 
-        staffPromise.then(staffData => {
-          let request = new XMLHttpRequest();
-          request.open('GET', '/api/schedules');
-          request.responseType = 'json';
+        datesPromise.then(dateArr => {
+          dateArr.forEach(dateString => {
+            let dateElement = createBookingDate(dateString);
+            dateElement.appendChild(document.createElement('ul'));
 
-          request.addEventListener('load', () => {
-            let bookings = {};
+            let request = new XMLHttpRequest();
+            request.open('GET', `/api/bookings/${dateString}`);
+            request.responseType = 'json';
 
-            request.response.forEach(schedule => {
-              if (schedule.student_email) {
-                let staff = getStaff(staffData, schedule.staff_id);
-                schedule.staff = staff;
-                let bookingElement = createBookingDetail(schedule);
-
-                if (!bookings[schedule.date]) bookings[schedule.date] = [];
-
-                bookings[schedule.date].push(bookingElement);
-              };
-            });
-
-            Object.keys(bookings).forEach(date => {
-              let dateElement = createBookingDate(date);
-              dateElement.appendChild(document.createElement('ul'));
-
-              bookings[date].forEach(bookingElement => {
+            request.addEventListener('load', event => {
+              event.target.response.forEach(bookingArr => {
+                let bookingElement = createBookingDetail(bookingArr);
                 dateElement.firstElementChild.appendChild(bookingElement);
               });
-
-              
-              list.appendChild(dateElement);
             });
-          });
 
-          request.addEventListener('error', () => {
+            request.addEventListener('error', () => {
             alert(`Something went wrong: ${request.status}`);
-          });
+            });
 
-          request.send();
+            request.send();
+
+            list.appendChild(dateElement);
+          });
         })
         .catch(reason => {
           alert(reason);
