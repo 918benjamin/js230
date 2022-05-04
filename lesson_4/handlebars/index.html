@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>your page title goes here</title>
+    <meta charset="utf-8" />
+    <!-- <link rel="stylesheet" href="" /> -->
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script id="post" type="text/x-handlebars">
+      {{#each posts}}
+      <article>
+        <h1>{{title}}</h1>
+        <p><time>Posted on {{published}}</time></p>
+        <p>
+          {{#if tags}}
+            {{#each tags}}
+            {{>tag}}
+            {{/each}}
+          {{else}}
+            Not tagged
+          {{/if}}
+        </p>
+        {{{body}}}
+      </article>
+      {{/each}}
+    </script>
+    <script>
+      let post1 = {
+        title: 'Lorem ipsum dolor sit amet',
+        published: 'April 1, 2015',
+        tags: ['tag1', 'tag2', 'tag3'],
+        body: 'Sed ut <strong>perspiciatis</strong> unde omnis iste natus error site voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.'
+      };
+
+      let post2 = {
+        title: 'Blah blah blah post 2',
+        published: 'April 1, 2016',
+        body: 'Second post body, very important information going on here!!!'
+      };
+
+      let posts = [post1, post2];
+
+      Handlebars.registerPartial('tag',
+        '<em>{{this}},</em>'
+      )
+
+      let template = $('#post').html();
+
+      let templateScript = Handlebars.compile(template);
+      let html = templateScript({posts: posts});
+      $(document.body).append(html);
+    </script>
+  </body>
+</html>
