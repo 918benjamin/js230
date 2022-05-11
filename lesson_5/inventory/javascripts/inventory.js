@@ -6,13 +6,19 @@ var inventory;
     collection: [],
     setDate: function() {
       var date = new Date();
-      // $("#order_date").text(date.toUTCString()); // previous
+      // $("#order_date").text(date.toUTCString()); // ORIGINAL
       document.getElementById('order_date').textContent = date.toUTCString();
     },
+
     cacheTemplate: function() {
-      var $iTmpl = $("#inventory_item").remove(); // REPLACE w/ handlebars
-      this.template = $iTmpl.html(); // REPLACE w/ JS
+      // var $iTmpl = $("#inventory_item").remove(); // ORIGINAL
+      var iTmpl = document.getElementById('inventory_item');
+
+      // this.template = $iTmpl.html(); // ORIGINAL
+      this.template = Handlebars.compile(iTmpl.innerHTML);
+      iTmpl.remove();
     },
+
     add: function() {
       this.lastId++;
       var item = {
@@ -25,11 +31,13 @@ var inventory;
 
       return item;
     },
+
     remove: function(idx) {
       this.collection = this.collection.filter(function(item) {
         return item.id !== idx;
       });
     },
+
     get: function(id) {
       var found_item;
 
@@ -42,40 +50,57 @@ var inventory;
 
       return found_item;
     },
-    update: function($item) { // REPLACE w/ JS
-      var id = this.findID($item),
-          item = this.get(id);
 
-      // REPLACE 
-      item.name = $item.find("[name^=item_name]").val();
-      item.stock_number = $item.find("[name^=item_stock_number]").val();
-      item.quantity = $item.find("[name^=item_quantity]").val();
+    update: function(itemNode) {
+      var id = this.findID(itemNode);
+      var item = this.get(id);
+
+      // item.name = $item.find("[name^=item_name]").val(); // ORIGINAL
+      item.name = itemNode.querySelector("[name^=item_name]").value;
+
+      // item.stock_number = $item.find("[name^=item_stock_number]").val(); // ORIGINAL
+      item.stock_number = itemNode.querySelector("[name^=item_stock_number]").value;
+
+      // item.quantity = $item.find("[name^=item_quantity]").val(); // ORIGINAL
+      item.quantity = itemNode.querySelector("[name^=item_quantity]").value;
     },
+
     newItem: function(e) {
       e.preventDefault();
-      var item = this.add(),
-          $item = $(this.template.replace(/ID/g, item.id)); // REPLACE
+      var item = this.add();
+      // $item = $(this.template.replace(/ID/g, item.id)); // ORIGINAL
+      var htmlString = this.template(item);
 
-      $("#inventory").append($item); // REPLACE
+      // $("#inventory").append($item); // ORIGINAL
+      document.getElementById('inventory').insertAdjacentHTML("beforeend", htmlString);
     },
+
     findParent: function(e) {
-      return $(e.target).closest("tr"); // REPLACE
+      // return $(e.target).closest("tr"); // ORIGINAL
+      return e.target.closest("tr");
     },
-    findID: function($item) {
-      return +$item.find("input[type=hidden]").val(); // REPLACE
+
+    findID: function(item) {
+      // return +$item.find("input[type=hidden]").val(); // ORIGINAL
+      return +item.querySelector('input[type=hidden]').value;
     },
+
     deleteItem: function(e) {
       e.preventDefault();
-      var $item = this.findParent(e).remove(); // REPLACE
+      // var $item = this.findParent(e).remove(); // ORIGINAL
+      var item = this.findParent(e).remove();
 
-      this.remove(this.findID($item));
+      this.remove(this.findID(item));
     },
+
     updateItem: function(e) {
-      var $item = this.findParent(e); // REPLACE
+      // var $item = this.findParent(e); // ORIGINAL
+      var item = this.findParent(e);
 
-      this.update($item);
+      this.update(item);
     },
-    bindEvents: function() { // REPLACE ALL THREE
+
+    bindEvents: function() {
       // $("#add_item").on("click", $.proxy(this.newItem, this)); // ORIGINAL
       document.getElementById("add_item").addEventListener("click", this.newItem.bind(this));
 
@@ -94,6 +119,7 @@ var inventory;
         }
       });
     },
+
     init: function() {
       this.setDate();
       this.cacheTemplate();
@@ -102,4 +128,7 @@ var inventory;
   };
 })();
 
-$($.proxy(inventory.init, inventory));
+// $($.proxy(inventory.init, inventory)); // ORIGINAL
+document.addEventListener('DOMContentLoaded', () => {
+  inventory.init();
+});
