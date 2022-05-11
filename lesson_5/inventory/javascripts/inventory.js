@@ -6,7 +6,7 @@ var inventory;
     collection: [],
     setDate: function() {
       var date = new Date();
-      // $("#order_date").text(date.toUTCString()); // REPLACE w/ JS
+      // $("#order_date").text(date.toUTCString()); // previous
       document.getElementById('order_date').textContent = date.toUTCString();
     },
     cacheTemplate: function() {
@@ -46,7 +46,7 @@ var inventory;
       var id = this.findID($item),
           item = this.get(id);
 
-      // REPLACE
+      // REPLACE 
       item.name = $item.find("[name^=item_name]").val();
       item.stock_number = $item.find("[name^=item_stock_number]").val();
       item.quantity = $item.find("[name^=item_quantity]").val();
@@ -65,7 +65,6 @@ var inventory;
       return +$item.find("input[type=hidden]").val(); // REPLACE
     },
     deleteItem: function(e) {
-      debugger;
       e.preventDefault();
       var $item = this.findParent(e).remove(); // REPLACE
 
@@ -77,17 +76,23 @@ var inventory;
       this.update($item);
     },
     bindEvents: function() { // REPLACE ALL THREE
-      // $("#add_item").on("click", $.proxy(this.newItem, this));
-      // $("#add_item").on("click", this.newItem.bind(this));
+      // $("#add_item").on("click", $.proxy(this.newItem, this)); // ORIGINAL
       document.getElementById("add_item").addEventListener("click", this.newItem.bind(this));
-      $("#inventory").on("click", "a.delete", $.proxy(this.deleteItem, this));
-      // document.getElementById('inventory').addEventListener(e => {
-      //   if (e.target.tagName === 'A') {
-      //     // e.preventDefault();
-      //     this.deleteItem(e).call(this)
-      //   }
-      // });
-      $("#inventory").on("blur", ":input", $.proxy(this.updateItem, this));
+
+      // $("#inventory").on("click", "a.delete", $.proxy(this.deleteItem, this)); // ORIGINAL
+      document.getElementById('inventory').addEventListener('click', e => {
+        if (e.target.tagName === 'A') {
+          e.preventDefault();
+          this.deleteItem.call(this, e)
+        }
+      });
+
+      // $("#inventory").on("blur", ":input", $.proxy(this.updateItem, this)); // ORIGINAL
+      document.getElementById('inventory').addEventListener('focusout', e => {
+        if (e.target.tagName === 'INPUT') {
+          this.updateItem.call(this, e);
+        }
+      });
     },
     init: function() {
       this.setDate();
