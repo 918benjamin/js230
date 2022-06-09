@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exotic Animals</title>
+  <style>
+    ul,ol { list-style: none; }
+    h1,h2,h3,h4,h5,h6,pre,code { font-size: 1em; }
+    ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,body,html,p,blockquote,fieldset,input,dl,dt,dd, figure, figcaption {
+      margin: 0;
+      padding: 0; }
+    a img,:link img,:visited img, fieldset { border: none; }
+    address { font-style: normal; }
+    header, section, article, nav, footer, hgroup, details, summary, figure, main { display: block; }
+    mark {
+      color: inherit;
+      background: transparent; }
+    abbr { border: none; }
+    summary::-webkit-details-marker { display: none; }
+
+    body {
+      background: #335;
+    }
+
+    img {
+      width: 100%;
+    }
+
+    figure {
+      width: 45%;
+      margin-left: 2%;
+      display: inline-block;
+      vertical-align: top;
+      padding: 10px;
+      box-sizing: border-box;
+      background: #fff;
+      border-radius: 3px;
+      position: relative;
+    }
+
+    figcaption {
+      display: none;
+      position: absolute;
+      width: 300px;
+      padding: 10px;
+      height: 150px;
+      border-radius: 4px;
+      background: rgba(0, 0, 20, 0.7);
+      color: #fff;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <figure>
+      <img src="https://c402277.ssl.cf1.rackcdn.com/photos/20852/images/magazine_medium/axolotl_WWsummer2021.jpg?1618758847">
+      <figcaption>test test test</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://t2.ea.ltmcdn.com/en/posts/1/9/5/the_most_exotic_animals_in_the_world_1591_600.jpg">
+      <figcaption>test test test</figcaption>
+    </figure>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let grid = document.querySelector('div');
+      grid.addEventListener('mouseover', e => {
+        if (e.target.tagName === 'IMG') {
+          let timeoutID = setTimeout(() => {
+            e.target.nextElementSibling.style.display = 'block';
+          }, 2000)
+
+          grid.addEventListener('mouseout', e => {
+            if (e.target.tagName === 'IMG') {
+              clearTimeout(timeoutID);
+              e.target.nextElementSibling.style.display = 'none';
+            }
+          })
+        }
+      })
+
+
+    })
+  </script>
+</body>
+</html>
