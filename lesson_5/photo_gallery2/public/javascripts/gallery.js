@@ -154,4 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
   });
+
+  document.querySelector('form').addEventListener('submit', e => {
+    e.preventDefault();
+    let formData = new FormData(e.target);
+    let currentSlideId = slideshow.currentSlide.getAttribute('data-id');
+    formData.set('photo_id', currentSlideId);
+    let encodedString = new URLSearchParams(formData).toString();
+
+    fetch(e.target.getAttribute('action'), {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: encodedString,
+    })
+      .then(response => response.json())
+      .then(json => {
+        let ul = document.querySelector('#comments > ul');
+        let newComment = templates.photo_comment(json);
+        ul.insertAdjacentHTML('beforeend', newComment);
+        e.target.reset();
+      });
+  })
 });
