@@ -83,6 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   }
 
+  const actions = {
+
+    bind() {
+
+    },
+
+    init() {
+
+    },
+  }
+
   document.querySelectorAll('script[type="text/x-handlebars"]').forEach(tmpl => {
     templates[tmpl.id] = Handlebars.compile(tmpl.innerHTML);
   });
@@ -124,24 +135,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // document.querySelector('.next').addEventListener('click', e => {
-  //   e.preventDefault();
-  //   let current = document.getElementById('slides').firstElementChild;
-  //   current.parentNode.append(current);
-  //   current = document.getElementById('slides').firstElementChild;
+  document.querySelector('section > header').addEventListener('click', e => {
+    if (e.target.tagName === 'A') {
+      e.preventDefault();
+      let button = e.target;
+      let photo_id = Number(button.dataset.id);
 
-  //   renderPhotoInformation(current.dataset.id);
-  //   getCommentsFor(current.dataset.id);
-  // })
-
-  // document.querySelector('.prev').addEventListener('click', e => {
-  //   e.preventDefault();
-  //   let last = document.getElementById('slides').lastElementChild;
-  //   last.parentNode.insertAdjacentElement('afterbegin', last);
-  //   let current = last;
-  //   let id = Number(current.dataset.id);
-
-  //   renderPhotoInformation(id);
-  //   getCommentsFor(id);
-  // })
+      fetch(button.getAttribute('href'), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({photo_id: photo_id}),
+      })
+        .then(response => response.json())
+        .then(json => {
+          let words = button.innerText.split(' ');
+          words[1] = json.total;
+          button.innerText = words.join(' ');
+        })
+    }
+  });
 });
