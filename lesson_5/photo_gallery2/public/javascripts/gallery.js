@@ -21,14 +21,67 @@
   // get back a number to replace as json object (total property)
     // replace the new total in the template
 
+
 document.addEventListener('DOMContentLoaded', () => {
-  // ajax request for JSON data of all photos
-  // then, render photos template
-    // write rendered template to #slides div
-  // render photo_information template using first photo data
-    // write rendered template to section > header
   const templates = {};
   let photos;
+
+  const slideshow = {
+    prevSlide(e) {
+      e.preventDefault();
+      let prev = this.currentSlide.previousElementSibling;
+      if (!prev) {
+        prev = this.lastSlide;
+      }
+      this.fadeOut(this.currentSlide);
+      this.fadeIn(prev);
+      this.renderPhotoContent(prev.dataset.id);
+      this.currentSlide = prev;
+    },
+
+    nextSlide(e) {
+      e.preventDefault();
+      let next = this.currentSlide.nextElementSibling;
+      if (!next) {
+        next = this.firstSlide;
+      }
+      this.fadeOut(this.currentSlide);
+      this.fadeIn(next);
+      this.renderPhotoContent(next.dataset.id);
+      this.currentSlide = next;
+    },
+
+    fadeOut(slide) {
+      slide.classList.add('hide');
+      slide.classList.remove('show');
+    },
+
+    fadeIn(slide) {
+      slide.classList.remove('hide');
+      slide.classList.add('show');
+    },
+
+    renderPhotoContent(index) {
+      renderPhotoInformation(Number(index));
+      getCommentsFor(index);
+    },
+
+    bind() {
+      let prevButton = this.slideshow.querySelector('a.prev');
+      let nextButton = this.slideshow.querySelector('a.next');
+      prevButton.addEventListener('click', e => this.prevSlide(e));
+      nextButton.addEventListener('click', e => this.nextSlide(e));
+    },
+
+    init() {
+      this.slideshow = document.querySelector("#slideshow");
+      let slides = this.slideshow.querySelectorAll('figure');
+      this.firstSlide = slides[0];
+      this.lastSlide = slides[slides.length - 1];
+      this.currentSlide = this.firstSlide;
+      this.bind();
+    },
+  }
 
   document.querySelectorAll('script[type="text/x-handlebars"]').forEach(tmpl => {
     templates[tmpl.id] = Handlebars.compile(tmpl.innerHTML);
@@ -45,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPhotos();
       renderPhotoInformation(photos[0].id);
       getCommentsFor(photos[0].id);
+      slideshow.init();
     });
   
   function renderPhotos() {
@@ -69,4 +123,25 @@ document.addEventListener('DOMContentLoaded', () => {
         ul.innerHTML = templates.photo_comments({comments: json});
       });
   }
+
+  // document.querySelector('.next').addEventListener('click', e => {
+  //   e.preventDefault();
+  //   let current = document.getElementById('slides').firstElementChild;
+  //   current.parentNode.append(current);
+  //   current = document.getElementById('slides').firstElementChild;
+
+  //   renderPhotoInformation(current.dataset.id);
+  //   getCommentsFor(current.dataset.id);
+  // })
+
+  // document.querySelector('.prev').addEventListener('click', e => {
+  //   e.preventDefault();
+  //   let last = document.getElementById('slides').lastElementChild;
+  //   last.parentNode.insertAdjacentElement('afterbegin', last);
+  //   let current = last;
+  //   let id = Number(current.dataset.id);
+
+  //   renderPhotoInformation(id);
+  //   getCommentsFor(id);
+  // })
 });
