@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Car Shop</title>
+    <link rel="stylesheet" href="./cars.css">
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="./cars.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Buy Used Cars</h1>
+      <form>
+        <label for="make">Make</label>
+        <select id="make" name="make">
+          <option selected>All</option>
+        </select>
+        <label for="model">Model</label>
+        <select id="model" name="model">
+          <option selected>All</option>
+        </select>
+        <label for="price">Price</label>
+        <select id="price" name="price">
+          <option selected>Any</option>
+        </select>
+        <label for="year">Year</label>
+        <select id="year" name="year">
+          <option selected>Any</option>
+        </select>
+        <button>Filter</button>
+      </form>
+    </header>
+    
+    <main>
+
+    </main>
+
+    <script id="cars" type="text/x-handlebars">
+      {{#each cars}}
+      {{> carDetail}}
+      {{/each}}
+    </script>
+
+    <script id="carDetail" type="text/x-handlebars" data-type="partial">
+      <section class="listing">
+        <img src="{{image}}" alt class='thumbnail' />
+        <p>{{make}} {{model}}</p>
+        <p>Year: {{year}}</p>
+        <p>Price: ${{price}}</p>
+        <button>Buy</button>
+      </section>
+    </script>
+  </body>
+</html>
