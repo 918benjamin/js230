@@ -1,8 +1,3 @@
-// 1. get the handlebars template from the DOM
-// 1. fetch the handlebars templates from the templates folder
-// compile those templates (get the function)
-// use them
-
 document.addEventListener('DOMContentLoaded', () => {
   async function getTemplate(templateName) {
     let url = `./templates/${templateName}.hbs`;
