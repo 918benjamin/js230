@@ -88,7 +88,38 @@ class Model {
 }
 
 class View {
-  constructor() {}
+  constructor() {
+    this.templates = {};
+    this.compileTemplates();
+    this.registerPartials();
+
+    this.contactContainer = document.querySelector('#contactContainer');
+  }
+
+  compileTemplates() {
+    document.querySelectorAll('[type="text/x-handlebars"]').forEach(template => {
+      this.templates[template.id] = Handlebars.compile(template.innerHTML)
+    });
+  }
+
+  registerPartials() {
+    document.querySelectorAll('[data-type="partial"]').forEach(partial => {
+      Handlebars.registerPartial(partial.id, partial.innerHTML);
+    });
+  }
+
+  
+
+  displayContacts(contacts) {
+    // TODO: What if there are no contacts?
+    const html = this.templates.contacts(contacts);
+
+    if (this.contactContainer.lastElementChild) {
+      this.contactContainer.removeChild(this.contactContainer.lastElementChild);
+    }
+
+    this.contactContainer.insertAdjacentHTML('beforeEnd', html);
+  }
 }
 
 class Controller {
@@ -96,3 +127,4 @@ class Controller {
 }
 
 let model = new Model();
+let view = new View();

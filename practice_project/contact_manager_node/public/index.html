@@ -8,23 +8,24 @@
     <link rel="stylesheet" href="/stylesheets/main.css" />
     <script src="/javascripts/jquery.js"></script>
     <script src="/javascripts/handlebars.js"></script>
-    <script src="/javascripts/app.js"></script>
   </head>
   <body>
     <header>
       <h1>Contact Manager</h1>
     </header>
 
-    <script id="menu" type="text/x-handlebars">
-      <div class="menu">
-        <button class="addContact" type="button">Add Contact</button>
-        <input type="text" placeholder="Search" />
-      </div>
-    </script>
+    <div id="menu">
+      <button class="addContact" type="button">Add Contact</button>
+      <input type="text" placeholder="Search" />
+    </div>
+
+    <div id="contactContainer">
+
+    </div>
 
     <script id="contacts" type="text/x-handlebars">
       <div class="contacts">
-        {{#each contacts}}
+        {{#each this}}
           {{> contactCard}}
         {{else}}
           <div class="noContacts">
@@ -82,6 +83,8 @@
         <button class="formBtn cancel edit" type="button">Cancel</button>
       </form>
     </script>
+
+    <script src="/javascripts/app.js"></script>
   </body>
 </html>
 
