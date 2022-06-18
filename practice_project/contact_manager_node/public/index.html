@@ -11,6 +11,89 @@
     <script src="/javascripts/app.js"></script>
   </head>
   <body>
-    <h1>Contact Manager</h1>
+    <header>
+      <h1>Contact Manager</h1>
+    </header>
+
+    <script id="menu" type="text/x-handlebars">
+      <div class="menu">
+        <button class="addContact" type="button">Add Contact</button>
+        <input type="text" placeholder="Search" />
+      </div>
+    </script>
+
+    <script id="contacts" type="text/x-handlebars">
+      <div class="contacts">
+        {{#each contacts}}
+          {{> contactCard}}
+        {{else}}
+          <div class="noContacts">
+            <h2>There are no contacts.</h2>
+            <button class="addContact" type="button">Add Contact</button>
+          </div>
+        {{/each}}
+      </div>
+    </script>
+
+    <script id="contactCard" type="text/x-handlebars" data-type="partial">
+      <div class="contactCard">
+        <h3>{{full_name}}</h3>
+        <h4>Phone Number:</h4>
+        <p>{{phone_number}}</p>
+        <h4>Email:</h4>
+        <p>{{email}}</p>
+        <button class="edit" type="button">Edit</button>
+        <button class="delete" type="button">Delete</button>
+      </div>
+    </script>
+
+    <script id="createContact" type="text/x-handlebars">
+      <h2>Create Contact</h2>
+      <form action="#" class="createContact">
+        <label for="full_name">Full name:</label>
+        <input type="text" name="full_name" />
+
+        <label for="email">Full name:</label>
+        <input type="text" name="email" />
+
+        <label for="phone_number"></label>
+        <input type="text" name="phone_number" />
+
+        <button class="formBtn submit" type="button">Submit</button>
+        <button class="formBtn cancel" type="button">Cancel</button>
+      </form>
+    </script>
+
+    <script id="editContact" type="text/x-handlebars">
+      <h2>Edit Contact</h2>
+      <form action="#" class="editContact">
+        <label for="full_name">Full name:</label>
+        <input type="text" name="full_name" value="{{full_name}}" />
+
+        <label for="email">Full name:</label>
+        <input type="text" name="email" value="{{email}}" />
+
+        <label for="phone_number"></label>
+        <input type="text" name="phone_number" value="{{phone_number}}" />
+
+        <input type="hidden" name="id" value="{{id}}" />
+
+        <button class="formBtn submit edit" type="button">Submit</button>
+        <button class="formBtn cancel edit" type="button">Cancel</button>
+      </form>
+    </script>
   </body>
 </html>
+
+<!-- 
+- Add contact + search bar box
+- display contacts
+  - if none, "There are no contacts" message + add contact button
+  - if 1+ each contact
+    - each needs to wrap
+- Individual contact card
+  - partial
+- Add Contact form
+  - h1, 3 labels + fields, submit & cancel buttons
+- Edit contact form
+- No contacts starting with X?? -->
