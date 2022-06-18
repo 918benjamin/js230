@@ -108,8 +108,6 @@ class View {
     });
   }
 
-  
-
   displayContacts(contacts) {
     // TODO: What if there are no contacts?
     const html = this.templates.contacts(contacts);
@@ -120,6 +118,8 @@ class View {
 
     this.contactContainer.insertAdjacentHTML('beforeEnd', html);
   }
+
+  
 }
 
 class Controller {

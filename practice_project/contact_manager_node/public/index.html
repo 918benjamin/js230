@@ -23,6 +23,29 @@
 
     </div>
 
+    <div id="addContact">
+      <h2>Create Contact</h2>
+      <form action="#" class="createContact">
+        <div class="formGroup">
+          <label for="full_name">Full name:</label>
+          <input type="text" name="full_name" />
+        </div>
+
+        <div class="formGroup">
+          <label for="email">Email Address:</label>
+          <input type="text" name="email" />
+        </div>
+
+        <div class="formGroup">
+          <label for="phone_number">Phone Number:</label>
+          <input type="text" name="phone_number" />
+        </div>
+
+        <button class="formBtn submit" type="button">Submit</button>
+        <button class="formBtn cancel" type="button">Cancel</button>
+      </form>
+    </div>
+
     <script id="contacts" type="text/x-handlebars">
       <div class="contacts">
         {{#each this}}
@@ -46,23 +69,6 @@
         <button class="edit" type="button">Edit</button>
         <button class="delete" type="button">Delete</button>
       </div>
-    </script>
-
-    <script id="createContact" type="text/x-handlebars">
-      <h2>Create Contact</h2>
-      <form action="#" class="createContact">
-        <label for="full_name">Full name:</label>
-        <input type="text" name="full_name" />
-
-        <label for="email">Full name:</label>
-        <input type="text" name="email" />
-
-        <label for="phone_number"></label>
-        <input type="text" name="phone_number" />
-
-        <button class="formBtn submit" type="button">Submit</button>
-        <button class="formBtn cancel" type="button">Cancel</button>
-      </form>
     </script>
 
     <script id="editContact" type="text/x-handlebars">
