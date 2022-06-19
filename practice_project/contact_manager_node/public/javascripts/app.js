@@ -65,8 +65,6 @@ class Model {
 
     if (!this.currentContact) {
       alert('Cannot find contact');
-    } else {
-      this.getAllContacts();
     }
   }
 
@@ -132,7 +130,13 @@ class View {
     this.app.innerHTML = this.templates.editContact(contact);
   }
 
-  bindButtonClick(handleCancel, handleEdit) {
+  // TODO: Does this cross the line to doing data-related functionality in View?
+  formToObject(form) {
+    const formData = new FormData(form);
+    return Object.fromEntries(formData.entries());
+  }
+
+  bindButtonClick(handleCancel, handleEdit, handleSubmit) {
     document.addEventListener("click", e => {
       const target = e.target;
       if (target.tagName !== "BUTTON") return;
@@ -140,7 +144,10 @@ class View {
       if (target.classList.contains('createContact')) {
         this.displayCreateContactForm();
       } else if (target.classList.contains('submit')) {
-        this.handleSubmit();
+        const form = target.parentNode;
+        const data = this.formToObject(form);
+
+        handleSubmit(data);
       } else if (target.classList.contains('cancel')) {
         handleCancel();
       } else if (target.classList.contains('edit')) {
@@ -157,7 +164,8 @@ class Controller {
 
     this.view.bindButtonClick(
       this.handleCancel.bind(this),
-      this.handleEdit.bind(this)
+      this.handleEdit.bind(this),
+      this.handleSubmit.bind(this)
     );
     
     this.onContactsChanged(this.model.getAllContacts());
@@ -173,6 +181,11 @@ class Controller {
 
   handleEdit(id) {
     this.view.displayEditForm(this.model.findContact(id));
+  }
+
+  handleSubmit(json) {
+    this.model.saveContact(json);
+    this.onContactsChanged(this.model.getAllContacts());
   }
 }
 
