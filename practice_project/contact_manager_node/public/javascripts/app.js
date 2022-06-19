@@ -30,6 +30,7 @@ class Model {
 
   async getAllContacts() {
     this.contacts = await this.request(this.api);
+    return this.contacts;
   }
 
   async getContact(id) {
@@ -39,6 +40,16 @@ class Model {
     if (!this.currentContact) {
       alert('Cannot find contact');
     }
+  }
+
+  findContact(id) {
+    for (let i = 0; i < this.contacts.length; i += 1) {
+      if (String(this.contacts[i].id) === String(id)) {
+        return this.contacts[i];
+      }
+    }
+
+    console.log('No contact found matching that id');
   }
 
   async saveContact(contact) {
@@ -93,7 +104,7 @@ class View {
     this.compileTemplates();
     this.registerPartials();
 
-    this.contactContainer = document.querySelector('#contactContainer');
+    this.app = document.querySelector('#app');
   }
 
   compileTemplates() {
@@ -109,22 +120,60 @@ class View {
   }
 
   displayContacts(contacts) {
-    // TODO: What if there are no contacts?
-    const html = this.templates.contacts(contacts);
-
-    if (this.contactContainer.lastElementChild) {
-      this.contactContainer.removeChild(this.contactContainer.lastElementChild);
-    }
-
-    this.contactContainer.insertAdjacentHTML('beforeEnd', html);
+    // TODO: What if there are no contacts? Handling empty array, not handling undefined arg
+    this.app.innerHTML = this.templates.main(contacts);
   }
 
-  
+  displayCreateContactForm() {
+    this.app.innerHTML = this.templates.createContact();
+  }
+
+  displayEditForm(contact) {
+    this.app.innerHTML = this.templates.editContact(contact);
+  }
+
+  bindButtonClick(handleCancel, handleEdit) {
+    document.addEventListener("click", e => {
+      const target = e.target;
+      if (target.tagName !== "BUTTON") return;
+
+      if (target.classList.contains('createContact')) {
+        this.displayCreateContactForm();
+      } else if (target.classList.contains('submit')) {
+        this.handleSubmit();
+      } else if (target.classList.contains('cancel')) {
+        handleCancel();
+      } else if (target.classList.contains('edit')) {
+        handleEdit(target.parentNode.dataset.id);
+      }
+    })
+  }
 }
 
 class Controller {
-  constructor() {}
+  constructor(model, view) {
+    this.model = model;
+    this.view = view;
+
+    this.view.bindButtonClick(
+      this.handleCancel.bind(this),
+      this.handleEdit.bind(this)
+    );
+    
+    this.onContactsChanged(this.model.getAllContacts());
+  }
+
+  async onContactsChanged(contacts) {
+    this.view.displayContacts(await contacts);
+  }
+
+  handleCancel() {
+    this.view.displayContacts(this.model.contacts);
+  }
+
+  handleEdit(id) {
+    this.view.displayEditForm(this.model.findContact(id));
+  }
 }
 
-let model = new Model();
-let view = new View();
+let app = new Controller(new Model(), new View());

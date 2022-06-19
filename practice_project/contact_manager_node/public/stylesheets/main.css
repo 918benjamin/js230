@@ -1,6 +1,13 @@
 /* TODO: Add ::before for edit and delete buttons with respective icons */
 
-.contactCard, #addContact {
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+
+.contactCard, #createContact {
   display: inline-block;
   padding: 10px;
   margin: 10px;
@@ -9,11 +16,20 @@
   box-shadow: 4px 4px 10px 2px rgba(0, 0, 0, 0.3);
 }
 
-#addContact {
+#app {
+  position: relative;
+  /* overflow: hidden; */
+}
+
+#createContact {
+  background-color: white;
   padding: 25px;
   margin: 25px;
   width: 75%;
   max-width: 500px;
+  display: none;
+  position: absolute;
+  bottom: -250px;
 }
 
 .contactCard {
@@ -21,7 +37,7 @@
 }
 
 h2,h3 {
-  margin-top: 0px;
+  margin-top: 10px;
 }
 
 h4, p {
@@ -36,4 +52,12 @@ h4, p {
 
 label {
   font-weight: bold;
+}
+
+.formBtn {
+  margin-top: 10px;
+}
+
+.formBtn + button {
+  margin-left: 10px;
 }
