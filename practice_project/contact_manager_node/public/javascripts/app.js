@@ -92,7 +92,6 @@ class Model {
     const init = { method: "DELETE" };
 
     this.request(resource, init, "text");
-    this.getAllContacts();
   }
 }
 
@@ -136,7 +135,7 @@ class View {
     return Object.fromEntries(formData.entries());
   }
 
-  bindButtonClick(handleCancel, handleEdit, handleSubmit) {
+  bindButtonClick(handleCancel, handleEdit, handleSubmitNew, handleSubmitEdit, handleDelete) {
     document.addEventListener("click", e => {
       const target = e.target;
       if (target.tagName !== "BUTTON") return;
@@ -147,11 +146,17 @@ class View {
         const form = target.parentNode;
         const data = this.formToObject(form);
 
-        handleSubmit(data);
+        if (target.classList.contains('edit')) {
+          handleSubmitEdit(data);
+        } else {
+          handleSubmitNew(data);
+        }
       } else if (target.classList.contains('cancel')) {
         handleCancel();
       } else if (target.classList.contains('edit')) {
         handleEdit(target.parentNode.dataset.id);
+      } else if (target.classList.contains('delete')) {
+        handleDelete(target.parentNode.dataset.id);
       }
     })
   }
@@ -165,7 +170,9 @@ class Controller {
     this.view.bindButtonClick(
       this.handleCancel.bind(this),
       this.handleEdit.bind(this),
-      this.handleSubmit.bind(this)
+      this.handleSubmitNew.bind(this),
+      this.handleSubmitEdit.bind(this),
+      this.handleDelete.bind(this)
     );
     
     this.onContactsChanged(this.model.getAllContacts());
@@ -183,8 +190,18 @@ class Controller {
     this.view.displayEditForm(this.model.findContact(id));
   }
 
-  handleSubmit(json) {
-    this.model.saveContact(json);
+  async handleSubmitNew(json) {
+    await this.model.saveContact(json);
+    this.onContactsChanged(this.model.getAllContacts());
+  }
+
+  async handleSubmitEdit(json) {
+    this.model.updateContact(json);
+    this.onContactsChanged(this.model.getAllContacts());
+  }
+
+  async handleDelete(id) {
+    await this.model.deleteContact(id);
     this.onContactsChanged(this.model.getAllContacts());
   }
 }

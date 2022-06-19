@@ -80,3 +80,8 @@
   - h1, 3 labels + fields, submit & cancel buttons
 - Edit contact form
 - No contacts starting with X??
+
+
+## extras
+- animations
+- enter to submit forms once inside form
