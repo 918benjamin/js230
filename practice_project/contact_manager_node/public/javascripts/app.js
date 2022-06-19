@@ -196,7 +196,7 @@ class Controller {
   }
 
   async handleSubmitEdit(json) {
-    this.model.updateContact(json);
+    await this.model.updateContact(json);
     this.onContactsChanged(this.model.getAllContacts());
   }
 

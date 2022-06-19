@@ -1,16 +1,1 @@
-[
-  {
-    "full_name": "Ben",
-    "phone_number": "1234456123412341512351234",
-    "email": "test@test.com",
-    "tags": null,
-    "id": 1
-  },
-  {
-    "full_name": "Person 2",
-    "phone_number": "1",
-    "email": "test",
-    "tags": null,
-    "id": 2
-  }
-]
+[]
