@@ -34,11 +34,13 @@ class Model {
   }
 
   async getContact(id) {
-    const resource = this.api + 'contacts/' + String(id);
+    const resource = this.api + id;
     this.currentContact = await this.request(resource);
 
     if (!this.currentContact) {
       alert('Cannot find contact');
+    } else {
+      return this.currentContact;
     }
   }
 
@@ -82,8 +84,6 @@ class Model {
 
     if (!this.currentContact) {
       alert('Cannot find contact');
-    } else {
-      this.getAllContacts();
     }
   }
 
@@ -182,12 +182,12 @@ class Controller {
     this.view.displayContacts(await contacts);
   }
 
-  handleCancel() {
-    this.view.displayContacts(this.model.contacts);
+  async handleCancel() {
+    this.view.displayContacts(await this.model.getAllContacts());
   }
 
-  handleEdit(id) {
-    this.view.displayEditForm(this.model.findContact(id));
+  async handleEdit(id) {
+    this.view.displayEditForm(await this.model.getContact(id));
   }
 
   async handleSubmitNew(json) {
