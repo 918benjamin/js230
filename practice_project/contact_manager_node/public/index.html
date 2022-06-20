@@ -20,19 +20,29 @@
     <script id="main" type="text/x-handlebars">
       <div id="viewContacts">
         <button class="createContact" type="button">Add Contact</button>
-        <input type="text" placeholder="Search" />
+        <input id="search" type="text" placeholder="Search" />
 
-        <div class="contacts">
+        <div id="contacts" class="contacts">
           {{#each this}}
             {{> contactCard}}
           {{else}}
-            <div class="noContacts">
-              <h2>There are no contacts.</h2>
-              <button class="createContact" type="button">Add Contact</button>
-            </div>
+          <div class="noContacts">
+            <h2>There are no contacts.</h2>
+          <button class="createContact" type="button">Add Contact</button>
+          </div>
           {{/each}}
         </div>
       </div>
+    </script>
+
+    <script id="searchResults" type="text/x-handlebars">
+      {{#each contacts}}
+        {{> contactCard}}
+      {{else}}
+      <div class="noContacts">
+        <h2>There are no contacts starting with <strong>{{prefix}}</strong>.</h2>
+      </div>
+    {{/each}}
     </script>
 
     <script id="createContact" type="text/x-handlebars">

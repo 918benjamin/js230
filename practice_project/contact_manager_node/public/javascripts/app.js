@@ -83,6 +83,17 @@ class Model {
 
     this.request(resource, init, "text");
   }
+
+  filterContacts(prefix) {
+    const filteredResults = this.contacts.filter(contact => {
+        return contact.full_name.toLowerCase().startsWith(prefix);
+    });
+
+    return {
+      contacts: filteredResults,
+      query: prefix
+    }
+  }
 }
 
 class View {
@@ -107,8 +118,12 @@ class View {
   }
 
   displayContacts(contacts) {
-    // TODO: What if there are no contacts? Handling empty array, not handling undefined arg
     this.app.innerHTML = this.templates.main(contacts);
+  }
+
+  displaySearchResults(results) {
+    this.contactsContainer = document.querySelector('#contacts');
+    this.contactsContainer.innerHTML = this.templates.searchResults(results);
   }
 
   displayCreateContactForm() {
@@ -153,6 +168,16 @@ class View {
       }
     })
   }
+
+  bindFilterBasedOnSearch(handler) {
+    document.addEventListener("input", e => {
+      const target = e.target;
+
+      if (target.tagName === "INPUT" && target.id === "search") {
+        handler(target.value);
+      }
+    })
+  }
 }
 
 class Controller {
@@ -160,6 +185,7 @@ class Controller {
     this.model = model;
     this.view = view;
 
+    this.view.bindFilterBasedOnSearch(this.handleSearch.bind(this));
     this.view.bindButtonClick(
       this.handleCancel.bind(this),
       this.handleEdit.bind(this),
@@ -167,12 +193,20 @@ class Controller {
       this.handleSubmitEdit.bind(this),
       this.handleDelete.bind(this)
     );
-    
+
     this.onContactsChanged(this.model.getAllContacts());
   }
 
   async onContactsChanged(contacts) {
     this.view.displayContacts(await contacts);
+  }
+
+  onSearchResultsChanged(results) {
+    this.view.displaySearchResults(results);
+  }
+
+  handleSearch(query) {
+    this.onSearchResultsChanged(this.model.filterContacts(query));
   }
 
   async handleCancel() {
