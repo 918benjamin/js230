@@ -44,16 +44,6 @@ class Model {
     }
   }
 
-  findContact(id) {
-    for (let i = 0; i < this.contacts.length; i += 1) {
-      if (String(this.contacts[i].id) === String(id)) {
-        return this.contacts[i];
-      }
-    }
-
-    console.log('No contact found matching that id');
-  }
-
   async saveContact(contact) {
     const init = {
       method: "POST",
@@ -156,7 +146,10 @@ class View {
       } else if (target.classList.contains('edit')) {
         handleEdit(target.parentNode.dataset.id);
       } else if (target.classList.contains('delete')) {
-        handleDelete(target.parentNode.dataset.id);
+        const message = "Do you want to delete the contact?";
+        if (confirm(message)) {
+          handleDelete(target.parentNode.dataset.id);
+        }
       }
     })
   }
