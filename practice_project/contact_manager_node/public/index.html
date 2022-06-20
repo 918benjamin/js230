@@ -40,7 +40,7 @@
         {{> contactCard}}
       {{else}}
       <div class="noContacts">
-        <h2>There are no contacts starting with <strong>{{prefix}}</strong>.</h2>
+        <h2>There are no contacts starting with {{query}}.</h2>
       </div>
     {{/each}}
     </script>
@@ -61,7 +61,7 @@
   
           <div class="formGroup">
             <label for="phone_number">Phone Number:</label>
-            <input type="text" name="phone_number" />
+            <input type="input" name="phone_number" />
           </div>
   
           <button class="formBtn submit" type="button">Submit</button>
@@ -97,7 +97,7 @@
 
         <div class="formGroup">
           <label for="phone_number">Phone Number:</label>
-          <input type="text" name="phone_number" value="{{phone_number}}" />
+          <input type="input" name="phone_number" value="{{phone_number}}" />
         </div>
 
         <input type="hidden" name="id" value="{{id}}" />

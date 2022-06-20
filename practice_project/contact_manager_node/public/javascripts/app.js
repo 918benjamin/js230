@@ -81,17 +81,17 @@ class Model {
     const resource = this.api + String(id);
     const init = { method: "DELETE" };
 
-    this.request(resource, init, "text");
+    await this.request(resource, init, "text");
   }
 
-  filterContacts(prefix) {
+  filterContacts(query) {
     const filteredResults = this.contacts.filter(contact => {
-        return contact.full_name.toLowerCase().startsWith(prefix);
+        return contact.full_name.toLowerCase().startsWith(query.toLowerCase());
     });
 
     return {
       contacts: filteredResults,
-      query: prefix
+      query: query
     }
   }
 }
@@ -134,7 +134,6 @@ class View {
     this.app.innerHTML = this.templates.editContact(contact);
   }
 
-  // TODO: Does this cross the line to doing data-related functionality in View?
   formToObject(form) {
     const formData = new FormData(form);
     return Object.fromEntries(formData.entries());
@@ -194,11 +193,12 @@ class Controller {
       this.handleDelete.bind(this)
     );
 
-    this.onContactsChanged(this.model.getAllContacts());
+    this.onContactsChanged();
   }
 
-  async onContactsChanged(contacts) {
-    this.view.displayContacts(await contacts);
+  async onContactsChanged() {
+    const contacts = await this.model.getAllContacts();
+    this.view.displayContacts(contacts);
   }
 
   onSearchResultsChanged(results) {
@@ -219,17 +219,17 @@ class Controller {
 
   async handleSubmitNew(json) {
     await this.model.saveContact(json);
-    this.onContactsChanged(this.model.getAllContacts());
+    this.onContactsChanged();
   }
 
   async handleSubmitEdit(json) {
     await this.model.updateContact(json);
-    this.onContactsChanged(this.model.getAllContacts());
+    this.onContactsChanged();
   }
 
   async handleDelete(id) {
     await this.model.deleteContact(id);
-    this.onContactsChanged(this.model.getAllContacts());
+    this.onContactsChanged();
   }
 }
 
