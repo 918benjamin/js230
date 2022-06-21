@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up Form</title>
+  <style>
+    label, button {
+      display: block;
+    }
+
+    input.invalid {
+      border-color: red;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+
+    .error {
+      color: red;
+    }
+
+    /* .cc {
+      max-width: 35px;
+    } */
+  </style>
+</head>
+<body>
+  <form action="#" novalidate>
+    <p class="error"></p>
+
+    <label for="fname">First Name:</label>
+    <input id="fname" type="text" name="fname" required />
+    <span class="error"></span>
+
+    <label for="lname">Last Name:</label>
+    <input id="lname" type="text" name="lname" required />
+    <span class="error"></span>
+
+    <label for="email">Email Address:</label>
+    <input id="email" type="email" name="email" pattern=".+@.+" required />
+    <span class="error"></span>
+
+    <label for="password">Password:</label>
+    <input id="password" type="password" name="password" minlength="10" required />
+    <span class="error"></span>
+
+    <label for="phone">Phone Number:</label>
+    <input id="phone" type="tel" name="phone" placeholder="111-222-3333" pattern="\d{3}-\d{3}-\d{4}" />
+    <span class="error"></span>
+
+    <label for="creditCard">Credit Card:</label>
+    <input class="cc" type="text" name="creditCard" pattern="\d{4}" required/>
+    <span>-</span>
+    <input class="cc" type="text" name="creditCard" pattern="\d{4}" required/>
+    <span>-</span>
+    <input class="cc" type="text" name="creditCard" pattern="\d{4}" required/>
+    <span>-</span>
+    <input class="cc" type="text" name="creditCard" pattern="\d{4}" required/>
+    <span class="error"></span>
+
+    <button type="button" id="submit">Sign Up</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function validateFirstName(input) {
+        if (input.validity.valueMissing) {
+          return "First Name is a required field.";
+        }
+      }
+
+      function validateLastName(input) {
+        if (input.validity.valueMissing) {
+          return "Last Name is a required field.";
+        }
+      }
+
+      function validateEmail(input) {
+        if (input.validity.valueMissing) {
+          return "Email is a required field.";
+        } else if (input.validity.patternMismatch) {
+          return "Please enter a valid email (something@something)";
+        }
+      }
+
+      function validatePassword(input) {
+        if (input.validity.valueMissing) {
+          return "Password is a required field.";
+        } else if (input.validity.tooShort) {
+          return "Password must be at least 10 characters long.";
+        }
+      }
+
+      function validatePhone(input) {
+        if (input.validity.patternMismatch) {
+          return "Please Enter a valid Phone Number (111-222-3333).";
+        }
+      }
+
+      function validateCreditCard(input) {
+        if (input.validity.valueMissing) {
+          return "Credit card is required";
+        } else if (input.validity.patternMismatch) {
+          return "Please Enter a valid Credit Card. (too short!)";
+        }
+      }
+      
+      function getNextErrorSibling(nextSibling) {
+        while(!nextSibling.classList.contains("error")) {
+          nextSibling = nextSibling.nextElementSibling;
+        }
+
+        return nextSibling;
+      }
+
+      function submitForm(form) {
+        const div = document.createElement('div');
+        form.after(div);
+        let h1 = document.createElement('h1');
+        h1.textContent = 'Serialized Data';
+        div.appendChild(h1);
+
+        let creditCard = '';
+
+        let data = new URLSearchParams(new FormData(form));
+
+        data.forEach((value, key) => {
+          if (key === 'creditCard') {
+            creditCard += value;
+          }
+        });
+
+        data.delete('creditCard');
+        data.append('creditCard', creditCard);
+
+        let p = document.createElement('p');
+        p.textContent = data;
+        div.appendChild(p);
+      }
+
+      let form = document.querySelector('form');
+
+      form.addEventListener('focusout', e => {
+        const target = e.target;
+
+        if (target.tagName !== "INPUT") return;
+
+        if (!target.validity.valid) {
+          target.classList.add('invalid');
+          let message;
+
+          if (target.id === "fname") {
+              message = validateFirstName(target);
+          } else if (target.id === "lname") {
+            message = validateLastName(target);
+          } else if (target.id === "email") {
+            message = validateEmail(target);
+          } else if (target.id === "password") {
+            message = validatePassword(target);
+          } else if (target.id === "phone") {
+            message = validatePhone(target);
+          } else if (target.classList.contains("cc")) {
+            message = validateCreditCard(target);
+          }
+
+          const nextSibling = getNextErrorSibling(target.nextElementSibling);
+          nextSibling.textContent = message;
+        }
+
+        if (form.checkValidity()) {
+          form.firstElementChild.textContent = "";
+        }
+      })
+
+      form.addEventListener('focusin', e => {
+        const target = e.target;
+        if (target.tagName !== "INPUT") return;
+
+        const nextSibling = getNextErrorSibling(target.nextElementSibling);
+        nextSibling.textContent = "";
+        target.classList.remove('invalid');
+      })
+
+      const button = document.querySelector('#submit');
+      button.addEventListener('click', e => {
+        if(form.checkValidity()) {
+          submitForm(form);
+          form.reset();
+        } else {
+          form.firstElementChild.textContent = "Form cannot be submitted until errors are corrected.";
+        }
+      })
+
+      form.addEventListener('input', e => {
+        const target = e.target;
+
+        if (target.id === "fname" || target.id === "lname") {
+          target.value = target.value.replace(/[^a-zA-Z'\s]/g, "");
+        } else if (target.id === "phone") {
+          target.value = target.value.replace(/[^\d\-]/g, "");
+        } else if (target.classList.contains("cc")) {
+          target.value = target.value.replace(/[^\d]/g, "");
+        }
+      });
+
+      let creditCardInputs = document.querySelectorAll('.cc')
+      creditCardInputs.forEach((input, index) => {
+        if (index < creditCardInputs.length - 1) {
+          input.addEventListener('input', e => {
+            if (e.target.value.length === 4) {
+              e.target.nextElementSibling.nextElementSibling.focus();
+            }
+          })
+        }
+      })
+    });
+  </script>
+</body>
+</html>
